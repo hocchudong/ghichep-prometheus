@@ -1,6 +1,8 @@
-﻿### Các bước cài đặt
+﻿#Install Prometheus
 
-#### Cài đặt Prometheus
+Truy cập https://prometheus.io/download/ để tải các gói cài đặt
+
+###1. Cài đặt Prometheus
 - Tạo thư mục để download bộ cài 
 
 ```sh
@@ -8,10 +10,10 @@ mkdir ~/Downloads
 cd ~/Downloads
 ```
 
-- Tải file cài đặt mới nhất (21/01/2016) Version Prometheus 0.16.2
+- Tải file cài đặt mới nhất (01/11/2016) Version Prometheus 1.2.3
 
 ```sh
-wget "https://github.com/prometheus/prometheus/releases/download/0.16.2/prometheus-0.16.2.linux-amd64.tar.gz"
+wget "https://github.com/prometheus/prometheus/releases/download/v1.2.3/prometheus-1.2.3.linux-amd64.tar.gz"
 ```
 
 - Tạo thư mục `/Prometheus/server` trong thư mục `/root`
@@ -20,19 +22,14 @@ wget "https://github.com/prometheus/prometheus/releases/download/0.16.2/promethe
 mkdir -p ~/Prometheus/server
 ```
 
-- Di chuyển vào thư mục vừa tạo ở trên 
-```sh
-cd ~/Prometheus/server
-```
-
 - Giải nén bộ cài Prometheus
 ```sh
-tar -xvzf ~/Downloads/prometheus-0.16.2.linux-amd64.tar.gz
-```
+tar -xvzf ~/Downloads/prometheus-1.2.3.linux-amd64.tar.gz -C ~/Prometheus/server
+``` 
 
 - Di chuyển vào thư mục vừa giải nén
 ```sh
-cd ~/Prometheus/server/prometheus-0.16.2.linux-amd64
+cd ~/Prometheus/server/prometheus-1.2.3.linux-amd64
 ```
 
 - Thực hiện lệnh cài đặt 
@@ -42,34 +39,33 @@ cd ~/Prometheus/server/prometheus-0.16.2.linux-amd64
 
 - Kết quả lệnh trên sẽ như sau
 ```sh
-prometheus, version 0.16.2 (branch: release-0.16, revision: 287d9b2)
-  build user:       fabianreinartz@macpro
-  build date:       20160118-13:10:31
-  go version:       1.5.3
+prometheus, version 1.2.3 (branch: master, revision: c1eee5b0da2540b9dfd2f70752015b0fce83b616)
+  build user:       root@d8eb84e17a12
+  build date:       20161103-21:45:14
+  go version:       go1.7.3
 ```
 
+###2. Cài đặt `Node Exporter` để giám sát CPU, RAM, DISK I/O ...
 
-#### Cài đặt `Node Exporter` để giám sát CPU, RAM, DISK I/O ...
-
-- Tạo thư mục `/root/Prometheus/node_exporter`
+- Tải `node_exporter-0.13.0-rc.1.linux-amd64.tar.gz` về thư mục  `/root/Downloads`
 ```sh
-mkdir -p ~/Prometheus/node_exporter
-cd ~/Prometheus/node_exporter
+wget https://github.com/prometheus/node_exporter/releases/download/v0.13.0-rc.1/node_exporter-0.13.0-rc.1.linux-amd64.tar.gz -O ~/Downloads/node_exporter-0.13.0-rc.1.linux-amd64.tar.gz
 ```
 
-- Tải `node_exporter-0.11.0.linux-amd64.tar.gz` về thư mục  `/root/Prometheus`
+- Giải nén `node_exporter-0.13.0-rc.1.linux-amd64.tar.gz` và giải nén sang thư mục `/root/Prometheus`
 ```sh
-wget https://github.com/prometheus/node_exporter/releases/download/0.11.0/node_exporter-0.11.0.linux-amd64.tar.gz -O ~/Downloads/node_exporter-0.11.0.linux-amd64.tar.gz
+tar -xvzf ~/Downloads/node_exporter-0.13.0-rc.1.linux-amd64.tar.gz -C /root/Prometheus
 ```
 
-- Giải nén `node_exporter-0.11.0.linux-amd64.tar.gz` vào thư mục hiện tại là `/root/Prometheus/node_exporter`
+- Đổi tên thư mục vừa giải nén
+
 ```sh
-tar -xvzf ~/Downloads/node_exporter-0.11.0.linux-amd64.tar.gz
+mv /root/Prometheus/node_exporter-0.13.0-rc.1.linux-amd64 /root/Prometheus/node_exporter
 ```
 
 - Tạo soft link cho node_exporter 
 ```sh
-sudo ln -s ~/Prometheus/node_exporter/node_exporter /usr/bin
+ln -s ~/Prometheus/node_exporter/node_exporter /usr/bin
 ```
 
 - Tạo file `/etc/init/node_exporter.conf` với nội dung dưới
@@ -85,34 +81,24 @@ end script
 
 - Khởi động `node_exporter`
 ```sh
-sudo service node_exporter start
+service node_exporter start
 ```
 
 - Mở web với địa chỉ của máy chủ cài Prometheus `http://your_server_ip:9100/metrics` sẽ thấy kết quả dưới
 ```sh
 # HELP go_gc_duration_seconds A summary of the GC invocation durations.
 # TYPE go_gc_duration_seconds summary
-go_gc_duration_seconds{quantile="0"} 0.00029520400000000003
-go_gc_duration_seconds{quantile="0.25"} 0.000324071
-go_gc_duration_seconds{quantile="0.5"} 0.0006052060000000001
-go_gc_duration_seconds{quantile="0.75"} 0.0013162150000000001
-go_gc_duration_seconds{quantile="1"} 0.0018389020000000001
-go_gc_duration_seconds_sum 0.005879231
-go_gc_duration_seconds_count 7
+go_gc_duration_seconds{quantile="0"} 0
+go_gc_duration_seconds{quantile="0.25"} 0
+go_gc_duration_seconds{quantile="0.5"} 0
+go_gc_duration_seconds{quantile="0.75"} 0
+go_gc_duration_seconds{quantile="1"} 0
+go_gc_duration_seconds_sum 0
+go_gc_duration_seconds_count 0
 # HELP go_goroutines Number of goroutines that currently exist.
 # TYPE go_goroutines gauge
-go_goroutines 13
-
+go_goroutines 11
 ......
-```
-
-- Tạo file `/root/Prometheus/server/prometheus-0.16.2.linux-amd64/prometheus.yml` với nội dung dưới
-```sh
-scrape_configs:
-  - job_name: "node"
-    scrape_interval: "15s"
-    target_groups:
-    - targets: ['localhost:9100']
 ```
 
 - Khởi động `prometheus` cùng OS 
@@ -129,27 +115,22 @@ nohup ./prometheus > prometheus.log 2>&1 &
 
 - Kiểm tra file log của prometheus
 ```sh
-tail ~/Prometheus/server/prometheus-0.16.2.linux-amd64/prometheus.log
+tail ~/Prometheus/server/prometheus-1.2.3.linux-amd64/prometheus.log
 ```
 
 - Kết quả của file log
 ```sh
-prometheus, version 0.16.2 (branch: release-0.16, revision: 287d9b2)
-  build user:       fabianreinartz@macpro
-  build date:       20160118-13:10:31
-  go version:       1.5.3
-time="2016-01-21T21:54:46+07:00" level=info msg="Loading configuration file prometheus.yml" source="main.go:196" 
-time="2016-01-21T21:54:46+07:00" level=info msg="Loading series map and head chunks..." source="storage.go:268" 
-time="2016-01-21T21:54:46+07:00" level=info msg="0 series loaded." source="storage.go:273" 
-time="2016-01-21T21:54:46+07:00" level=info msg="Starting target manager..." source="targetmanager.go:114" 
-time="2016-01-21T21:54:46+07:00" level=info msg="Listening on :9090" source="web.go:220" 
+time="2016-11-05T10:59:44+07:00" level=info msg="Starting prometheus (version=1.2.3, branch=master, revision=c1eee5b0da2540b9dfd2f70752015b0fce83b616)" source="main.go:75"
+time="2016-11-05T10:59:44+07:00" level=info msg="Build context (go=go1.7.3, user=root@d8eb84e17a12, date=20161103-21:45:14)" source="main.go:76"
+time="2016-11-05T10:59:44+07:00" level=info msg="Loading configuration file prometheus.yml" source="main.go:247"
+time="2016-11-05T10:59:44+07:00" level=info msg="Loading series map and head chunks..." source="storage.go:354"
+time="2016-11-05T10:59:44+07:00" level=info msg="0 series loaded." source="storage.go:359"
+time="2016-11-05T10:59:44+07:00" level=info msg="Listening on :9090" source="web.go:240"
+time="2016-11-05T10:59:44+07:00" level=warning msg="No AlertManagers configured, not dispatching any alerts" source="notifier.go:176"
+time="2016-11-05T10:59:44+07:00" level=info msg="Starting target manager..." source="targetmanager.go:76"
 ```
 
 - Truy cập vào web của prometheus với URL: http://your_server_ip:9090
-
-
-- Truy cập vào http://IP_SRV_PROMETHEUS:9090/consoles/node.html để xem các thông số về RAM/CPU
-
 
 #### Cài đặt `PromDash`
 
