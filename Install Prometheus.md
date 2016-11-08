@@ -11,11 +11,15 @@ Mục lục:
 
 [Chú ý](#c)
 
+Mô hình cài đặt:
+
+<img src=http://i.imgur.com/kueaHCm.png>
+
 Môi trường cài đặt:
 
-- 1 máy server ubuntu-14.04
-- 1 card mạng ra ngoài Internet để tải các gói cài đặt
-- Cài đặt dịch vụ Prometheus server, Node_exporter, PromDash
+- 1 máy server ubuntu-14.04 cài đặt dịch vụ Prometheus server, Node_exporter, PromDash
+- Card mạng ra ngoài Internet để tải các gói cài đặt
+- 1 máy client cài đặt Node_exporter để gửi thông tin về server (Chưa triển khai)
 
 Có thể truy cập https://prometheus.io/download/ để tải các gói cài đặt hoặc dùng lệnh wget
 
@@ -206,17 +210,23 @@ bundle exec rails s
 <img src=http://i.imgur.com/VqpyRC6.png>
 
 <a name="c"></a>
-###Chú ý:
+###Chú ý: 
 
-- Trường hợp ko truy cập được web sau khi reboot máy
+Khi reboot server
+
+- Ko vào được web http://your_server_ip:9090/
 
 ```sh
-Truy cập vào thư mục server
+Truy cập vào thư mục ~/Prometheus/server
 Xóa file prometheus.log
 Chạy command **nohup ./prometheus > prometheus.log 2>&1 &** để server tạo ra file prometheus.log mới
 ```
 
-- Chạy command `bundle exec rails s` để truy cập đc vào PromDash
+- Ko vào được PromDash
+
+```sh
+Chạy command `bundle exec rails s` trong thư mục ~/Prometheus/promdash
+```
 
 
 **Tham khảo:**
