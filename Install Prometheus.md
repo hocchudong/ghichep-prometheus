@@ -1,7 +1,29 @@
 ﻿#Install Prometheus
 
-Truy cập https://prometheus.io/download/ để tải các gói cài đặt
+Mục lục:
+==========
 
+[1. Cài đặt Prometheus](#1)
+
+[2. Cài đặt `Node Exporter` để giám sát CPU, RAM, DISK I/O ...](#2)
+
+[3. Cài đặt PromDash](#2)
+
+[Chú ý](#c)
+
+Mô hình cài đặt:
+
+<img src=http://i.imgur.com/kueaHCm.png>
+
+Môi trường cài đặt:
+
+- 1 máy server ubuntu-14.04 cài đặt dịch vụ Prometheus server, Node_exporter, PromDash
+- Card mạng ra ngoài Internet để tải các gói cài đặt
+- 1 máy client cài đặt Node_exporter để gửi thông tin về server (Chưa triển khai)
+
+Có thể truy cập https://prometheus.io/download/ để tải các gói cài đặt hoặc dùng lệnh wget
+
+<a name="1"></a>
 ###1. Cài đặt Prometheus
 - Tạo thư mục để download bộ cài 
 
@@ -10,30 +32,25 @@ mkdir ~/Downloads
 cd ~/Downloads
 ```
 
-- Tải file cài đặt mới nhất (01/11/2016) Version Prometheus 1.2.3
+- Tải file cài đặt (01/11/2016) Version 1.2.3
 
 ```sh
 wget "https://github.com/prometheus/prometheus/releases/download/v1.2.3/prometheus-1.2.3.linux-amd64.tar.gz"
 ```
 
-- Tạo thư mục `/Prometheus/server` trong thư mục `/root`
-
-```sh
-mkdir -p ~/Prometheus/server
-```
-
 - Giải nén bộ cài Prometheus
 ```sh
-tar -xvzf ~/Downloads/prometheus-1.2.3.linux-amd64.tar.gz -C ~/Prometheus/server
+tar -xvzf ~/Downloads/prometheus-1.2.3.linux-amd64.tar.gz -C ~/Prometheus
 ``` 
 
-- Di chuyển vào thư mục vừa giải nén
+- Đổi tên thư mục vừa giải nén
 ```sh
-cd ~/Prometheus/server/prometheus-1.2.3.linux-amd64
+mv ~/Prometheus/prometheus-1.2.3.linux-amd64 ~/Prometheus/server
 ```
 
-- Thực hiện lệnh cài đặt 
+- Vào thư mục và thực hiện lệnh cài đặt 
 ```sh
+cd ~/Prometheus/server
 ./prometheus -version
 ```
 
@@ -45,6 +62,7 @@ prometheus, version 1.2.3 (branch: master, revision: c1eee5b0da2540b9dfd2f707520
   go version:       go1.7.3
 ```
 
+<a name="2"></a>
 ###2. Cài đặt `Node Exporter` để giám sát CPU, RAM, DISK I/O ...
 
 - Tải `node_exporter-0.13.0-rc.1.linux-amd64.tar.gz` về thư mục  `/root/Downloads`
@@ -52,7 +70,7 @@ prometheus, version 1.2.3 (branch: master, revision: c1eee5b0da2540b9dfd2f707520
 wget https://github.com/prometheus/node_exporter/releases/download/v0.13.0-rc.1/node_exporter-0.13.0-rc.1.linux-amd64.tar.gz -O ~/Downloads/node_exporter-0.13.0-rc.1.linux-amd64.tar.gz
 ```
 
-- Giải nén `node_exporter-0.13.0-rc.1.linux-amd64.tar.gz` và giải nén sang thư mục `/root/Prometheus`
+- Giải nén sang thư mục `/root/Prometheus`
 ```sh
 tar -xvzf ~/Downloads/node_exporter-0.13.0-rc.1.linux-amd64.tar.gz -C /root/Prometheus
 ```
@@ -130,9 +148,14 @@ time="2016-11-05T10:59:44+07:00" level=warning msg="No AlertManagers configured,
 time="2016-11-05T10:59:44+07:00" level=info msg="Starting target manager..." source="targetmanager.go:76"
 ```
 
-- Truy cập vào web của prometheus với URL: http://your_server_ip:9090
+- Truy cập vào web của prometheus với URL: http://your_server_ip:9090 or http://your_server_ip:9090/consoles/node.html
 
-#### Cài đặt `PromDash`
+<img src=http://i.imgur.com/wdBl8Qp.png>
+
+<img src=http://i.imgur.com/Y6l8ru1.png>
+
+<a name="3"></a>
+###3. Cài đặt PromDash
 
 - Di chuyển vào /root/Prometheus`
 ```sh
@@ -141,7 +164,7 @@ cd ~/Prometheus
 
 - `PromDash` viết bằng Ruby & Rails do vậy cần cài đặt các gói bổ trợ 
 ```sh
-sudo apt-get update && sudo apt-get install git ruby bundler libsqlite3-dev sqlite3 zlib1g-dev
+apt-get update && sudo apt-get install git ruby bundler libsqlite3-dev sqlite3 zlib1g-dev
 ```
 
 - Tải `PromDash`
@@ -159,47 +182,58 @@ cd ~/Prometheus/promdash
 bundle install --without mysql postgresql
 ```
 
-- Kết quả sẽ như sau
+<img src=http://i.imgur.com/ze1sRsV.png>
+
+- Copy file database
 ```sh
-Your bundle is complete!
-Gems in the groups mysql and postgresql were not installed.
-Use `bundle show [gemname]` to see where a bundled gem is installed.
-Post-install message from rdoc:
+cp ~/Prometheus/promdash/config/database.yml.example ~/Prometheus/promdash/config/database.yml
 ```
 
-- Tạo thư mục để lưu trữ `SQLite3`
+- Đặt biến môi trường và tạo database
 
 ```sh
-mkdir ~/Prometheus/databases
+RAILS_ENV=development bundle exec rake db:setup
 ```
 
-- Thiết lập biến môi trường  `RAILS_ENV`
+<img src=http://i.imgur.com/C02gtR3.png>
+
+- Start the Rails server
+
 ```sh
-echo "export RAILS_ENV=production" >> ~/.bashrc
+bundle exec rails s
 ```
 
-- Thực thi các biến môi trường vừa khai báo
-```sh
-. ~/.bashrc
-```
-
-- Tạo db
-```sh
-rake db:migrate
-
-rake assets:precompile
-```
-
-- Chạy `promdash`
-```sh
-bundle exec thin start -d
-```
+<img src=http://i.imgur.com/Whbfjon.png>
 
 - Truy cập vào web với địa chỉ `http://your_server_ip:3000/`
 
-#### Tham khảo:
+<img src=http://i.imgur.com/VqpyRC6.png>
 
-1. https://www.digitalocean.com/community/tutorials/how-to-use-prometheus-to-monitor-your-ubuntu-14-04-server
+<a name="c"></a>
+###Chú ý: 
+
+Khi reboot server
+
+- Ko vào được web http://your_server_ip:9090/
+
+```sh
+Truy cập vào thư mục ~/Prometheus/server
+Xóa file prometheus.log
+Chạy command **nohup ./prometheus > prometheus.log 2>&1 &** để server tạo ra file prometheus.log mới
+```
+
+- Ko vào được PromDash
+
+```sh
+Chạy command `bundle exec rails s` trong thư mục ~/Prometheus/promdash
+```
+
+
+**Tham khảo:**
+
+[1]- https://www.digitalocean.com/community/tutorials/how-to-use-prometheus-to-monitor-your-ubuntu-14-04-server
+
+[2]- https://github.com/prometheus/promdash
 
 
 
