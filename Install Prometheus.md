@@ -7,9 +7,9 @@ Mục lục:
 
 [2. Cài đặt Node_Exporter để giám sát CPU, RAM, DISK I/O ...](#2)
 
-[3. Cài đặt PromDash](#2)
+[3. Cài đặt PromDash](#3)
 
-[4. Cài đặt Node_Exporter trên client]
+[4. Cài đặt Node_Exporter trên client](#4)
 
 [Chú ý](#c)
 
