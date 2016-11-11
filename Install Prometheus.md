@@ -5,9 +5,11 @@ Mục lục:
 
 [1. Cài đặt Prometheus](#1)
 
-[2. Cài đặt `Node Exporter` để giám sát CPU, RAM, DISK I/O ...](#2)
+[2. Cài đặt Node_Exporter để giám sát CPU, RAM, DISK I/O ...](#2)
 
 [3. Cài đặt PromDash](#2)
+
+[4. Cài đặt Node_Exporter trên client]
 
 [Chú ý](#c)
 
@@ -19,28 +21,32 @@ Môi trường cài đặt:
 
 - 1 máy server ubuntu-14.04 cài đặt dịch vụ Prometheus server, Node_exporter, PromDash
 - Card mạng ra ngoài Internet để tải các gói cài đặt
-- 1 máy client cài đặt Node_exporter để gửi thông tin về server (Chưa triển khai)
+- 1 máy client cài đặt Node_exporter để gửi thông tin về server
 
 Có thể truy cập https://prometheus.io/download/ để tải các gói cài đặt hoặc dùng lệnh wget
 
 <a name="1"></a>
 ###1. Cài đặt Prometheus
-- Tạo thư mục để download bộ cài 
 
+- Tạo thư mục cài đặt
+```sh
+mkdir -p Prometheus
+```
+
+- Tạo thư mục để download bộ cài 
 ```sh
 mkdir ~/Downloads
 cd ~/Downloads
 ```
 
-- Tải file cài đặt (01/11/2016) Version 1.2.3
-
+- Tải file cài đặt Version 1.2.3
 ```sh
-wget "https://github.com/prometheus/prometheus/releases/download/v1.2.3/prometheus-1.2.3.linux-amd64.tar.gz"
+wget https://github.com/prometheus/prometheus/releases/download/v1.2.3/prometheus-1.2.3.linux-amd64.tar.gz
 ```
 
 - Giải nén bộ cài Prometheus
 ```sh
-tar -xvzf ~/Downloads/prometheus-1.2.3.linux-amd64.tar.gz -C ~/Prometheus
+tar -xvzf ~/Downloads/prometheus-1.2.3.linux-amd64.tar.gz  -C ~/Prometheus
 ``` 
 
 - Đổi tên thư mục vừa giải nén
@@ -119,12 +125,28 @@ go_goroutines 11
 ......
 ```
 
-- Khởi động `prometheus` cùng OS 
+- Sửa file cấu hình `prometheus.yml`
 ```sh
+cd ~/Prometheus/server/
+vim prometheus.yml
+```
+
+- Sửa file theo ví dụ bên dưới:
+```sh
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['10.10.10.21:9100']
+```
+
+- Khởi động `prometheus`
+```sh
+cd ~/Prometheus/server/
 nohup ./prometheus > prometheus.log 2>&1 &
 ```
 
-- Kết quả sau khi khởi động cùng OS
+- Kết quả
 ```sh
 [1] 1410 
 
@@ -133,19 +155,23 @@ nohup ./prometheus > prometheus.log 2>&1 &
 
 - Kiểm tra file log của prometheus
 ```sh
-tail ~/Prometheus/server/prometheus-1.2.3.linux-amd64/prometheus.log
+tail ~/Prometheus/server/prometheus.log
 ```
 
 - Kết quả của file log
 ```sh
-time="2016-11-05T10:59:44+07:00" level=info msg="Starting prometheus (version=1.2.3, branch=master, revision=c1eee5b0da2540b9dfd2f70752015b0fce83b616)" source="main.go:75"
-time="2016-11-05T10:59:44+07:00" level=info msg="Build context (go=go1.7.3, user=root@d8eb84e17a12, date=20161103-21:45:14)" source="main.go:76"
-time="2016-11-05T10:59:44+07:00" level=info msg="Loading configuration file prometheus.yml" source="main.go:247"
-time="2016-11-05T10:59:44+07:00" level=info msg="Loading series map and head chunks..." source="storage.go:354"
-time="2016-11-05T10:59:44+07:00" level=info msg="0 series loaded." source="storage.go:359"
-time="2016-11-05T10:59:44+07:00" level=info msg="Listening on :9090" source="web.go:240"
-time="2016-11-05T10:59:44+07:00" level=warning msg="No AlertManagers configured, not dispatching any alerts" source="notifier.go:176"
-time="2016-11-05T10:59:44+07:00" level=info msg="Starting target manager..." source="targetmanager.go:76"
+root@prometheus:~/Prometheus/server# tailf prometheus.log
+time="2016-11-10T15:13:58+07:00" level=info msg="Cleaning up archive indexes." file=crashrecovery.go line=359
+time="2016-11-10T15:13:58+07:00" level=info msg="Clean-up of archive indexes complete." file=crashrecovery.go line=447
+time="2016-11-10T15:13:58+07:00" level=info msg="Rebuilding label indexes." file=crashrecovery.go line=455
+time="2016-11-10T15:13:58+07:00" level=info msg="Indexing metrics in memory." file=crashrecovery.go line=456
+time="2016-11-10T15:13:58+07:00" level=info msg="Indexing archived metrics." file=crashrecovery.go line=464
+time="2016-11-10T15:13:58+07:00" level=info msg="All requests for rebuilding the label indexes queued. (Actual processing may lag behind.)" file=crashrecovery.go line=483
+time="2016-11-10T15:13:58+07:00" level=warning msg="Crash recovery complete." file=crashrecovery.go line=141
+time="2016-11-10T15:13:58+07:00" level=info msg="495 series loaded." file=storage.go line=268
+time="2016-11-10T15:13:58+07:00" level=info msg="Starting target manager..." file=targetmanager.go line=75
+time="2016-11-10T15:13:58+07:00" level=info msg="Listening on :9090" file=web.go line=186
+
 ```
 
 - Truy cập vào web của prometheus với URL: http://your_server_ip:9090 or http://your_server_ip:9090/consoles/node.html
@@ -157,7 +183,7 @@ time="2016-11-05T10:59:44+07:00" level=info msg="Starting target manager..." sou
 <a name="3"></a>
 ###3. Cài đặt PromDash
 
-- Di chuyển vào /root/Prometheus`
+- Di chuyển vào `/root/Prometheus`
 ```sh
 cd ~/Prometheus
 ```
@@ -190,7 +216,6 @@ cp ~/Prometheus/promdash/config/database.yml.example ~/Prometheus/promdash/confi
 ```
 
 - Đặt biến môi trường và tạo database
-
 ```sh
 RAILS_ENV=development bundle exec rake db:setup
 ```
@@ -198,7 +223,6 @@ RAILS_ENV=development bundle exec rake db:setup
 <img src=http://i.imgur.com/C02gtR3.png>
 
 - Start the Rails server
-
 ```sh
 bundle exec rails s
 ```
@@ -209,6 +233,76 @@ bundle exec rails s
 
 <img src=http://i.imgur.com/VqpyRC6.png>
 
+<a name="4"></a>
+###4. Cài đặt Node_Exporter trên client
+
+- Tạo thư mục cài đặt
+```sh
+mkdir -p Prometheus
+```
+
+- Tạo thư mục để download bộ cài 
+```sh
+mkdir ~/Downloads
+cd ~/Downloads
+```
+- Tải `node_exporter-0.13.0-rc.1.linux-amd64.tar.gz` về thư mục  `/root/Downloads`
+```sh
+wget https://github.com/prometheus/node_exporter/releases/download/v0.13.0-rc.1/node_exporter-0.13.0-rc.1.linux-amd64.tar.gz -O ~/Downloads/node_exporter-0.13.0-rc.1.linux-amd64.tar.gz
+```
+
+- Giải nén sang thư mục `/root/Prometheus`
+```sh
+tar -xvzf ~/Downloads/node_exporter-0.13.0-rc.1.linux-amd64.tar.gz -C /root/Prometheus
+```
+
+- Đổi tên thư mục vừa giải nén
+
+```sh
+mv /root/Prometheus/node_exporter-0.13.0-rc.1.linux-amd64 /root/Prometheus/node_exporter
+```
+
+- Tạo soft link cho node_exporter 
+```sh
+ln -s ~/Prometheus/node_exporter/node_exporter /usr/bin
+```
+
+- Tạo file `/etc/init/node_exporter.conf` với nội dung dưới
+```sh
+# Run node_exporter
+
+start on startup
+
+script
+   /usr/bin/node_exporter
+end script
+```
+
+- Khởi động `node_exporter`
+```sh
+service node_exporter start
+```
+
+- Chỉnh sửa file prometheus.yml trên server
+
+Thêm các thông số cho client:
+
+```sh
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['prometheus:9090']
+      - targets: ['prometheus:9100']
+      - targets: ['prometheus-client:9100']
+```
+
+- Khởi động lại dịch vụ prometheus trên server
+
+- Truy cập http://your_server_ip:9090
+
+<img src=http://i.imgur.com/4wB0ygk.png>
+
 <a name="c"></a>
 ###Chú ý: 
 
@@ -217,9 +311,8 @@ Khi reboot server
 - Ko vào được web http://your_server_ip:9090/
 
 ```sh
-Truy cập vào thư mục ~/Prometheus/server
-Xóa file prometheus.log
-Chạy command **nohup ./prometheus > prometheus.log 2>&1 &** để server tạo ra file prometheus.log mới
+cd ~/Prometheus/server
+./prometheus
 ```
 
 - Ko vào được PromDash
