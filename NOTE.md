@@ -12,11 +12,13 @@
 
 [6. DATA MODEL](#6)
 
-[7. FLEXIBLE QUERY LANGUAGE](#7)
+[7. METRIC](#7)
 
 [8. ALERTING](#8)
 
 [9. JOBS AND INSTANCES](#9)
+
+[10. RULES])(#10)
 
 ==================
 
@@ -37,8 +39,6 @@ Xem metric từ node_exporter: http://<your-device-ip>:9100/metrics
 <a name="3"></a>
 3. CONSOLES DASHBOARDS
 
-- Ko quá 5 Graph trên 1 console
-- Ko quá 5 ô(dòng) trên mỗi graph 
 - Các trình duyệt sẵn có trong /graph của Prometheus server cho phép xem kết quả trên đồ thì hoặc bảng. Ví dụ PromDash hoặc Console templates.
 - Grafana dùng Prometheus như là data source.
 
@@ -67,19 +67,20 @@ Các **time series** được định danh duy nhất bằng *metric name* và *
 
 `<metric name>{<label name>=<label value>, ...}`
 
+Prometheus client library cung cấp 4 metric types:
+
+- Counter: Thể hiện cho giá trị luôn tăng
+- Gauge: Thể hiện cho giá trị có thể lên, có thể xuống.
+- Histogram: 
+- Summary: 
+
+
 <a name="7"></a>
-7. FLEXIBLE QUERY LANGUAGE
+7. METRIC
 
-* Prometheus cung cấp ngôn ngữ thể hiện (Expression language) để lựu chọn và tổng hợp time series data với thời gian thực. 
-* Kết quả trả về có thể view như một biểu đồ, bảng hoặc sử dụng bởi các hệ thống khác thông qua HTTP API.
-* Có 4 loại:
+Các Metric được lấy từ thư mục /proc và sử dụng Irate function từ v0.16.1 để đưa ra thông số. Irate function tính toán và đưa ra tỷ lệ trên mỗi giây
 
-	- Instant vector: `http_requests_total{job="prometheus",group="canary"}`
-	- Range vector: `http_requests_total{job="prometheus"}[5m]`
-	- Scalar
-	- String: `'these are not unescaped: \n ' " \t'`
-
-https://prometheus.io/docs/querying/basics/
+Ví dụ Metric của CPU được lấy từ /proc/stat 
 
 <a name="8"></a>
 8. ALERTING
@@ -90,6 +91,12 @@ https://prometheus.io/docs/querying/basics/
 	- Inhibition: Giữ lại các cảnh báo nếu một số cảnh báo khác đã được đưa ra.
 	- Silencing: Tắt cảnh báo trong khoảng thời gian nhất định.
 * Kết hợp cảnh báo với Plugin Nagios
+
+What alert on:
+
+Online-serving: Overall latency, errors
+Office processing: Delay
+batch job: When it last suceeded
 
 <a name="9"></a>
 9. JOBS AND INSTANCES
@@ -104,6 +111,7 @@ job: api-server
 	instance 4: 5.6.7.8:5671
 ```
 
+<a name="10"></a>
 10. RULES
 
 Có 2 loại rule `recording rules` và `alerting rules`.
@@ -123,4 +131,3 @@ ALERT <alert name>
   [ LABELS <label set> ]
   [ ANNOTATIONS <label set> ]
 ```
-
