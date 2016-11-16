@@ -107,6 +107,16 @@ node_memory_MemTotal{job='node',instance='localhost:9100'}
 node_memory_MemFree{job='node',instance='localhost:9100'}
 ```
 
+- Network receive
+```sh
+rate(node_network_receive_bytes{job='node',instance='localhost:9100',device='eth0'}[5m])
+```
+
+- % disk / use 
+```sh
+100 - node_filesystem_free{job='node',instance='localhost:9100',mountpoint='/'} / node_filesystem_size{job='node'} * 100
+```
+
 ### Function
 
 https://prometheus.io/docs/querying/functions/
