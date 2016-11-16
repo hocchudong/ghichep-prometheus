@@ -113,49 +113,49 @@ https://prometheus.io/docs/querying/functions/
 
 ### Các metrics của node_exporter
 
-- node_cpu Seconds the cpus spent in each mode.
-- node_disk_io_now The number of I/Os currently in progress.
-- node_disk_io_time_ms Milliseconds spent doing I/Os.
-- node_disk_io_time_weighted The weighted # of milliseconds spent doing I/Os.
-- node_disk_read_time_ms The total number of milliseconds spent by all reads.
-- node_disk_reads_completed The total number of reads completed successfully.
-- node_disk_reads_merged The number of reads merged.
-- node_disk_sectors_read The total number of sectors read successfully.
-- node_disk_sectors_written The total number of sectors written successfully.
-- node_disk_writes_completed The total number of writes completed successfully.
+- node_cpu: Seconds the cpus spent in each mode.
+- node_disk_io:_now The number of I/Os currently in progress.
+- node_disk_io_time_ms: Milliseconds spent doing I/Os.
+- node_disk_io_time_weighted: The weighted # of milliseconds spent doing I/Os.
+- node_disk_read_time_ms: The total number of milliseconds spent by all reads.
+- node_disk_reads_completed: The total number of reads completed successfully.
+- node_disk_reads_merged: The number of reads merged.
+- node_disk_sectors_read: The total number of sectors read successfully.
+- node_disk_sectors_written: The total number of sectors written successfully.
+- node_disk_writes_completed: The total number of writes completed successfully.
 
 ===========================================
 
-- node_filesystem_avail Filesystem space available to non-root users in bytes.
-- node_filesystem_files Filesystem total file nodes.
-- node_filesystem_files_free Filesystem total free file nodes.
-- node_filesystem_free Filesystem free space in bytes.
-- node_filesystem_size Filesystem size in bytes.
+- node_filesystem_avail: Filesystem space available to non-root users in bytes.
+- node_filesystem_files: Filesystem total file nodes.
+- node_filesystem_files:_free Filesystem total free file nodes.
+- node_filesystem_free: Filesystem free space in bytes.
+- node_filesystem_size: Filesystem size in bytes.
 
 ============================================
 
-- node_memory_Active Active from /proc/meminfo.
-- node_load1 1m load average.
-- node_memory_Buffers Buffers from /proc/meminfo.
-- node_memory_Cached Cached from /proc/meminfo.
-- node_memory_MemFree MemFree from /proc/meminfo.
-- node_memory_MemAvailable MemAvailable from /proc/meminfo.
-- node_memory_SwapCached SwapCached from /proc/meminfo.
-- node_memory_SwapFree SwapFree from /proc/meminfo.
-- node_memory_SwapTotal SwapTotal from /proc/meminfo.
+- node_memory_Active: Active from /proc/meminfo.
+- node_load1: 1m load average.
+- node_memory_Buffers: Buffers from /proc/meminfo.
+- node_memory_Cached: Cached from /proc/meminfo.
+- node_memory_MemFree: MemFree from /proc/meminfo.
+- node_memory_MemAvailable: MemAvailable from /proc/meminfo.
+- node_memory_SwapCached: SwapCached from /proc/meminfo.
+- node_memory_SwapFree: SwapFree from /proc/meminfo.
+- node_memory_SwapTotal: SwapTotal from /proc/meminfo.
 
 ============================================
 
-- node_network_receive_bytes bytes receive from /proc/net/dev.
-- node_network_receive_compressed compressed receive from /proc/net/dev.
-- node_network_receive_drop drop receive from /proc/net/dev.
-- node_network_receive_errs errs receive from /proc/net/dev.
-- node_network_transmit_bytes bytes transmit from /proc/net/dev.
+- node_network_receive_bytes: bytes receive from /proc/net/dev.
+- node_network_receive_compressed: compressed receive from /proc/net/dev.
+- node_network_receive_drop: drop receive from /proc/net/dev.
+- node_network_receive_errs: errs receive from /proc/net/dev.
+- node_network_transmit_bytes: bytes transmit from /proc/net/dev.
 
 ============================================
 
-- node_time System time in seconds since epoch (1970).
-- process_cpu_seconds_total Total user and system CPU time spent in seconds.
+- node_time: System time in seconds since epoch (1970).
+- process_cpu_seconds_total: Total user and system CPU time spent in seconds.
 
 
 
