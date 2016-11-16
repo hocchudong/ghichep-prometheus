@@ -25,8 +25,11 @@ Môi trường cài đặt:
 
 Có thể truy cập https://prometheus.io/download/ để tải các gói cài đặt hoặc dùng lệnh wget
 
+
 <a name="1"></a>
 ###1. Cài đặt Prometheus
+
+========================
 
 - Tạo thư mục cài đặt
 ```sh
@@ -70,6 +73,8 @@ prometheus, version 1.2.3 (branch: master, revision: c1eee5b0da2540b9dfd2f707520
 
 <a name="2"></a>
 ###2. Cài đặt `Node Exporter` để giám sát CPU, RAM, DISK I/O ...
+
+================================================================
 
 - Tải `node_exporter-0.13.0-rc.1.linux-amd64.tar.gz` về thư mục  `/root/Downloads`
 ```sh
@@ -133,64 +138,60 @@ vim prometheus.yml
 
 - Sửa file theo ví dụ bên dưới:
 ```sh
+# my global config
+global:
+  scrape_interval:     15s # By default, scrape targets every 15 seconds.
+  evaluation_interval: 15s # By default, scrape targets every 15 seconds.
+  external_labels:
+      monitor: 'codelab-monitor'
+rule_files:
+  # - "first.rules"
+  # - "second.rules"
 scrape_configs:
   - job_name: 'prometheus'
     scrape_interval: 5s
     static_configs:
-      - targets: ['10.10.10.21:9100']
+      - targets: ['10.10.10.20:9100']
+      - targets: ['10.10.10.20:9090']
+```
+
+- Với phiên bản 0.15.1 ta có file cấu hình
+
+```sh
+scrape_configs:
+  - job_name: "node"
+    scrape_interval: "15s"
+    target_groups:
+    - targets: ['localhost:9100']
 ```
 
 - Khởi động `prometheus`
 ```sh
 cd ~/Prometheus/server/
-nohup ./prometheus > prometheus.log 2>&1 &
+./prometheus
 ```
 
-- Kết quả
-```sh
-[1] 1410 
+<img src=http://i.imgur.com/u8xerFC.png>
 
-- Lưu ý, số trên sẽ thay đổi tùy lần chạy.
-```
+- Truy cập vào web của prometheus với URL: http://your_server_ip:9090 or http://your_server_ip:9090/consoles/prometheus.html
 
-- Kiểm tra file log của prometheus
-```sh
-tail ~/Prometheus/server/prometheus.log
-```
+<img src=http://i.imgur.com/Dlwl4kq.png>
 
-- Kết quả của file log
-```sh
-root@prometheus:~/Prometheus/server# tailf prometheus.log
-time="2016-11-10T15:13:58+07:00" level=info msg="Cleaning up archive indexes." file=crashrecovery.go line=359
-time="2016-11-10T15:13:58+07:00" level=info msg="Clean-up of archive indexes complete." file=crashrecovery.go line=447
-time="2016-11-10T15:13:58+07:00" level=info msg="Rebuilding label indexes." file=crashrecovery.go line=455
-time="2016-11-10T15:13:58+07:00" level=info msg="Indexing metrics in memory." file=crashrecovery.go line=456
-time="2016-11-10T15:13:58+07:00" level=info msg="Indexing archived metrics." file=crashrecovery.go line=464
-time="2016-11-10T15:13:58+07:00" level=info msg="All requests for rebuilding the label indexes queued. (Actual processing may lag behind.)" file=crashrecovery.go line=483
-time="2016-11-10T15:13:58+07:00" level=warning msg="Crash recovery complete." file=crashrecovery.go line=141
-time="2016-11-10T15:13:58+07:00" level=info msg="495 series loaded." file=storage.go line=268
-time="2016-11-10T15:13:58+07:00" level=info msg="Starting target manager..." file=targetmanager.go line=75
-time="2016-11-10T15:13:58+07:00" level=info msg="Listening on :9090" file=web.go line=186
-
-```
-
-- Truy cập vào web của prometheus với URL: http://your_server_ip:9090 or http://your_server_ip:9090/consoles/node.html
-
-<img src=http://i.imgur.com/wdBl8Qp.png>
-
-<img src=http://i.imgur.com/Y6l8ru1.png>
+<img src=http://i.imgur.com/9T7TKFK.png>
 
 <a name="3"></a>
 ###3. Cài đặt PromDash
 
-- Di chuyển vào `/root/Prometheus`
-```sh
-cd ~/Prometheus
-```
+======================
 
 - `PromDash` viết bằng Ruby & Rails do vậy cần cài đặt các gói bổ trợ 
 ```sh
 apt-get update && sudo apt-get install git ruby bundler libsqlite3-dev sqlite3 zlib1g-dev
+```
+
+- Di chuyển vào `/root/Prometheus`
+```sh
+cd ~/Prometheus
 ```
 
 - Tải `PromDash`
@@ -231,10 +232,12 @@ bundle exec rails s
 
 - Truy cập vào web với địa chỉ `http://your_server_ip:3000/`
 
-<img src=http://i.imgur.com/VqpyRC6.png>
+<img src=ttp://i.imgur.com/XS2CnVK.png>
 
 <a name="4"></a>
 ###4. Cài đặt Node_Exporter trên client
+
+=======================================
 
 - Tạo thư mục cài đặt
 ```sh
@@ -288,13 +291,8 @@ service node_exporter start
 Thêm các thông số cho client:
 
 ```sh
-scrape_configs:
-  - job_name: 'prometheus'
-    scrape_interval: 5s
-    static_configs:
-      - targets: ['prometheus:9090']
-      - targets: ['prometheus:9100']
-      - targets: ['prometheus-client:9100']
+      - targets: ['10.10.10.21:9100']
+	  - targets: ['10.10.10.21:9090']
 ```
 
 - Khởi động lại dịch vụ prometheus trên server
@@ -318,7 +316,8 @@ cd ~/Prometheus/server
 - Ko vào được PromDash
 
 ```sh
-Chạy command `bundle exec rails s` trong thư mục ~/Prometheus/promdash
+cd ~/Prometheus/promdash
+bundle exec rails s 
 ```
 
 
