@@ -1,7 +1,10 @@
-#Querying Metrics
+
+#A. Querying Metrics
+#B. Cấu hình Grafana-Prometheus
 
 =================
 
+###A. Querying Metrics
 * Prometheus cung cấp ngôn ngữ thể hiện (Expression language) để lựu chọn và tổng hợp time series data với thời gian thực. 
 
 * Kết quả trả về có thể view như một biểu đồ, bảng hoặc sử dụng bởi các hệ thống khác thông qua HTTP API.
@@ -117,11 +120,11 @@ rate(node_network_receive_bytes{job='node',instance='localhost:9100',device='eth
 100 - node_filesystem_free{job='node',instance='localhost:9100',mountpoint='/'} / node_filesystem_size{job='node'} * 100
 ```
 
-### Function
+**Function**
 
 https://prometheus.io/docs/querying/functions/
 
-### Các metrics của node_exporter
+**Các metrics của node_exporter**
 
 - node_cpu: Seconds the cpus spent in each mode.
 - node_disk_io:_now The number of I/Os currently in progress.
@@ -138,7 +141,7 @@ https://prometheus.io/docs/querying/functions/
 
 - node_filesystem_avail: Filesystem space available to non-root users in bytes.
 - node_filesystem_files: Filesystem total file nodes.
-- node_filesystem_files:_free Filesystem total free file nodes.
+- node_filesystem_files_free: Filesystem total free file nodes.
 - node_filesystem_free: Filesystem free space in bytes.
 - node_filesystem_size: Filesystem size in bytes.
 
@@ -167,9 +170,50 @@ https://prometheus.io/docs/querying/functions/
 - node_time: System time in seconds since epoch (1970).
 - process_cpu_seconds_total: Total user and system CPU time spent in seconds.
 
+###B. Cấu hình Grafana-Prometheus
 
+**1. Cài đặt Grafana 3.1.1**
 
+- Tải gói cài .deb
+```sh
+wget https://grafanarel.s3.amazonaws.com/builds/grafana_3.1.1-1470047149_amd64.deb
+apt-get install -y adduser libfontconfig
+dpkg -i grafana_3.1.1-1470047149_amd64.deb
+```
 
+- Khởi động Grafana
+```sh
+service grafana-server start
+```
+
+- Khởi động cùng OS 
+```sh
+update-rc.d grafana-server defaults 95 10
+```
+
+- Đăng nhập theo URL: `http://IP:3000` User, Password là admin
+
+**2. Cài đặt Grafana-Prometheus**
+
+- Import Data Sources
+
+<img src=http://i.imgur.com/OLS5APu.png>
+
+<img src=http://i.imgur.com/tY3Rk19.png>
+
+- Tạo dashboard
+
+<img src=http://i.imgur.com/OLS5APu.png>
+
+- Chọn Add Panel để thêm các biểu đồ
+
+<img src=http://i.imgur.com/c5d5Vy5.png>
+
+Ví dụ: Prometheus Dash 2 PC
+
+<img src=http://i.imgur.com/bwMxR6l.png>
+
+Node: Tắt prometheus-client thì mất khoảng 5 phút mới ngắt hiện thông số bên Grafana
 
 
 
