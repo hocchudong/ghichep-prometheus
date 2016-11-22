@@ -15,13 +15,13 @@ Mục lục:
 
 Mô hình cài đặt:
 
-<img src=http://i.imgur.com/kueaHCm.png>
+<img src=http://i.imgur.com/maft8I3.png>
 
 Môi trường cài đặt:
 
-- 1 máy server ubuntu-14.04 cài đặt dịch vụ Prometheus server, Node_exporter, PromDash
+- 1 máy Prometheus Server ubuntu-14.04 cài đặt dịch vụ Prometheus, Node_exporter, PromDash
 - Card mạng ra ngoài Internet để tải các gói cài đặt
-- 1 máy client cài đặt Node_exporter để gửi thông tin về server
+- 1 máy Client ubuntu-14.04 cài đặt Node_exporter để gửi thông tin về Prometheus Server
 
 Có thể truy cập https://prometheus.io/download/ để tải các gói cài đặt hoặc dùng lệnh wget
 
@@ -162,7 +162,7 @@ scrape_configs:
   - job_name: "node"
     scrape_interval: "15s"
     target_groups:
-    - targets: ['localhost:9100']
+    - targets: ['10.10.10.20:9100']
 ```
 
 - Khởi động `prometheus`
