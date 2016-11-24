@@ -1,35 +1,48 @@
-﻿#Install Prometheus
+﻿#Cài đặt Prometheus
 
 Mục lục:
-==========
 
-[1. Cài đặt Prometheus](#1)
+========
 
-[2. Cài đặt Node_Exporter để giám sát CPU, RAM, DISK I/O ...](#2)
+[1. Mô hình cài đặt](#1)
 
-[3. Cài đặt PromDash](#3)
+[2. Cài đặt Prometheus](#2)
 
-[4. Cài đặt Node_Exporter trên client](#4)
+[3. Cài đặt Node_Exporter để giám sát CPU, RAM, DISK I/O ...](#3)
+
+[4. Cài đặt PromDash](#4)
+
+[5. Cài đặt Node_Exporter trên client](#5)
+
+[6. Hướng dẫn dùng PromDash](#6)
 
 [Chú ý](#c)
 
-Mô hình cài đặt:
+<a name="1"></a>
+###1. Mô hình cài đặt
 
-<img src=http://i.imgur.com/maft8I3.png>
+=====================
+
+<img src=http://i.imgur.com/GBeJgiO.png>
 
 Môi trường cài đặt:
 
 - 1 máy Prometheus Server ubuntu-14.04 cài đặt dịch vụ Prometheus, Node_exporter, PromDash
-- Card mạng ra ngoài Internet để tải các gói cài đặt
+- Card mạng eth0 ra ngoài Internet để tải các gói cài đặt
 - 1 máy Client ubuntu-14.04 cài đặt Node_exporter để gửi thông tin về Prometheus Server
-
+- Các câu lệnh thực hiện với quyền root
 Có thể truy cập https://prometheus.io/download/ để tải các gói cài đặt hoặc dùng lệnh wget
 
-
-<a name="1"></a>
-###1. Cài đặt Prometheus
+<a name="2"></a>
+###2. Cài đặt Prometheus
 
 ========================
+
+- Sửa file /etc/hosts
+```sh
+10.10.10.20	prometheus
+10.10.10.21	prometheus-client
+```
 
 - Tạo thư mục cài đặt
 ```sh
@@ -71,8 +84,8 @@ prometheus, version 1.2.3 (branch: master, revision: c1eee5b0da2540b9dfd2f707520
   go version:       go1.7.3
 ```
 
-<a name="2"></a>
-###2. Cài đặt `Node Exporter` để giám sát CPU, RAM, DISK I/O ...
+<a name="3"></a>
+###3. Cài đặt `Node Exporter` để giám sát CPU, RAM, DISK I/O ...
 
 ================================================================
 
@@ -87,7 +100,6 @@ tar -xvzf ~/Downloads/node_exporter-0.13.0-rc.1.linux-amd64.tar.gz -C /root/Prom
 ```
 
 - Đổi tên thư mục vừa giải nén
-
 ```sh
 mv /root/Prometheus/node_exporter-0.13.0-rc.1.linux-amd64 /root/Prometheus/node_exporter
 ```
@@ -151,8 +163,8 @@ scrape_configs:
   - job_name: 'prometheus'
     scrape_interval: 5s
     static_configs:
-      - targets: ['10.10.10.20:9100']
-      - targets: ['10.10.10.20:9090']
+      - targets: ['prometheus:9100']
+      - targets: ['prometheus:9090']
 ```
 
 - Với phiên bản 0.15.1 ta có file cấu hình
@@ -162,7 +174,7 @@ scrape_configs:
   - job_name: "node"
     scrape_interval: "15s"
     target_groups:
-    - targets: ['10.10.10.20:9100']
+    - targets: ['prometheus:9100']
 ```
 
 - Khởi động `prometheus`
@@ -173,14 +185,14 @@ cd ~/Prometheus/server/
 
 <img src=http://i.imgur.com/u8xerFC.png>
 
-- Truy cập vào web của prometheus với URL: http://your_server_ip:9090 or http://your_server_ip:9090/consoles/prometheus.html
+- Truy cập vào web của prometheus với URL: http://your_server_ip:9090 hoặc http://your_server_ip:9090/consoles/prometheus.html
 
 <img src=http://i.imgur.com/Dlwl4kq.png>
 
 <img src=http://i.imgur.com/9T7TKFK.png>
 
-<a name="3"></a>
-###3. Cài đặt PromDash
+<a name="4"></a>
+###4. Cài đặt PromDash
 
 ======================
 
@@ -234,8 +246,10 @@ bundle exec rails s
 
 <img src=ttp://i.imgur.com/XS2CnVK.png>
 
-<a name="4"></a>
-###4. Cài đặt Node_Exporter trên client
+- Hướng dẫn sử dụng PromDash xem mục 6
+
+<a name="5"></a>
+###5. Cài đặt Node_Exporter trên client
 
 =======================================
 
@@ -291,15 +305,61 @@ service node_exporter start
 Thêm các thông số cho client:
 
 ```sh
-      - targets: ['10.10.10.21:9100']
-	  - targets: ['10.10.10.21:9090']
+- targets: ['prometheus-client:9100']
+- targets: ['prometheus-client:9090']
 ```
 
 - Khởi động lại dịch vụ prometheus trên server
 
-- Truy cập http://your_server_ip:9090
+- Truy cập http://your_server_ip:9090 và truy xuất 1 biểu đồ
+
+Ví dụ: node_filedf_allocated
 
 <img src=http://i.imgur.com/4wB0ygk.png>
+
+<a name="5"></a>
+###6.Hướng dẫn dùng PromeDash
+
+=============================
+
+- Truy cập vào địa chỉ http://your_server_ip:3000/
+
+- Chọn thẻ Servers -> New Servers
+
+<img src=http://i.imgur.com/zLDGlNo.png>
+
+- Nhập tên server, địa chỉ server
+
+<img src=http://i.imgur.com/IQkdVFB.png>
+
+- Chọn thẻ Dashboards -> New Dashboard
+
+<img src=http://i.imgur.com/xV1Pz6B.png>
+
+- Nhập tên dashboard, địa chỉ -> Create Dashboard
+
+<img src=http://i.imgur.com/QMgAUmu.png>
+
+- Click chuột vào mũi tên để thêm expression (Đồ thị)
+
+<img src=http://i.imgur.com/4US01Zt.png>
+
+- Lấy tên các expression từ địa chỉ http://your_server_ip:9090
+
+<img src=http://i.imgur.com/iNVJuS6.png>
+
+- Copy và paste sang Dashboards
+
+<img src=http://i.imgur.com/J1w3VuI.png>
+
+Ở trên đã thêm 2 expression `go_memstats_sys_bytes` và `http_requests_total`.
+
+Sau khi điền expression, chờ 1 lúc để server trả về kết quả.
+
+Có thể tùy chỉnh màu sắc, đường biểu đồ, thời gian đồng bộ, khoảng thời gian thể hiện...
+
+<img src=http://i.imgur.com/If1fqaq.png>
+
 
 <a name="c"></a>
 ###Chú ý: 
@@ -319,7 +379,6 @@ cd ~/Prometheus/server
 cd ~/Prometheus/promdash
 bundle exec rails s 
 ```
-
 
 **Tham khảo:**
 
