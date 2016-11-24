@@ -1,10 +1,16 @@
+Mục lục:
 
-#A. Querying Metrics
-#B. Cấu hình Grafana-Prometheus
+========
 
-=================
+[A. Querying Metrics](#A)
 
+[B. Cấu hình Grafana-Prometheus](#B)
+
+<a name="A"></a>
 ###A. Querying Metrics
+
+======================
+
 * Prometheus cung cấp ngôn ngữ thể hiện (Expression language) để lựu chọn và tổng hợp time series data với thời gian thực. 
 
 * Kết quả trả về có thể view như một biểu đồ, bảng hoặc sử dụng bởi các hệ thống khác thông qua HTTP API.
@@ -18,36 +24,34 @@
 
 https://prometheus.io/docs/querying/basics/
 
-### Các toán tử
+**Các toán tử**
 
-<ul>
-<li>+ (addition)
-<li>- (subtraction)
-<li>* (multiplication)
-<li>/ (division)
-<li>% (modulo)
-<li>^ (power/exponentiation)
-<li>== (equal)
-<li>!= (not-equal)
-<li>> (greater-than)
-<li>< (less-than)
-<li>>= (greater-or-equal)
-<li><= (less-or-equal)
-<li>and (intersection)
-<li>or (union)
-<li>unless (complement)
-<li>sum (calculate sum over dimensions)
-<li>min (select minimum over dimensions)
-<li>max (select maximum over dimensions)
-<li>avg (calculate the average over dimensions)
-<li>stddev (calculate population standard deviation over dimensions)
-<li>stdvar (calculate population standard variance over dimensions)
-<li>count (count number of elements in the vector)
-<li>count_values (count number of elements with the same value)
-<li>bottomk (smallest k elements by sample value)
-<li>topk (largest k elements by sample value)
-<li>quantile (calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions)
-<ul>
+- + (addition)
+- - (subtraction)
+- * (multiplication)
+- / (division)
+- % (modulo)
+- ^ (power/exponentiation)
+- == (equal)
+- != (not-equal)
+- > (greater-than)
+- < (less-than)
+- >= (greater-or-equal)
+- <= (less-or-equal)
+- and (intersection)
+- or (union)
+- unless (complement)
+- sum (calculate sum over dimensions)
+- min (select minimum over dimensions)
+- max (select maximum over dimensions)
+- avg (calculate the average over dimensions)
+- stddev (calculate population standard deviation over dimensions)
+- stdvar (calculate population standard variance over dimensions)
+- count (count number of elements in the vector)
+- count_values (count number of elements with the same value)
+- bottomk (smallest k elements by sample value)
+- topk (largest k elements by sample value)
+- quantile (calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions)
 
 **Ví dụ:**
 
@@ -170,7 +174,10 @@ https://prometheus.io/docs/querying/functions/
 - node_time: System time in seconds since epoch (1970).
 - process_cpu_seconds_total: Total user and system CPU time spent in seconds.
 
+<a name="B"></a>
 ###B. Cấu hình Grafana-Prometheus
+
+=================================
 
 **1. Cài đặt Grafana 3.1.1**
 
@@ -193,7 +200,7 @@ update-rc.d grafana-server defaults 95 10
 
 - Đăng nhập theo URL: `http://IP:3000` User, Password là admin
 
-**2. Cài đặt Grafana-Prometheus**
+**2. Cấu hình Grafana-Prometheus**
 
 - Import Data Sources
 
