@@ -1,0 +1,35 @@
+#Các file chứa thông tin hệ thống trong thư mục /proc
+
+- file:/proc/cmdline == Kernel Command line (eg . “/rhgb”, “quite” etc.
+- file:/proc/cpuinfo == used cpus and various info about them
+- file:/proc/crypto == current password encription (such as MD5)
+- file:/proc/devices == available character(eg terminal,sound etc.) and block device name and corresponding number
+- file:/proc/diskstats == status about all diskdevice including ramdrive (such as free space,etc.)
+- file:/proc/dma == dma status (such as cascade)
+- file:/proc/execdomains == don’t know, maybe about kernel domain !
+- file:/proc/fb == maybe about any pending mails
+- file:/proc/filesystems == available filesystems (such as : ext3,vfat,etc.)
+- file:/proc/interrupts == available and usable interrupts and their number
+- file:/proc/iomem == kernel ram info (may be about available memory mapped io space)
+- file:/proc/ioports == available system io ports (such as timer,pci,vga+ , etc)
+- file:/proc/kcore == You can not access it as it is used by kernel itself
+- file:/proc/kmsg == Kernel Messages
+- file:/proc/loadavg == CPU Loads and uptime
+- file:/proc/locks
+- file:/proc/mdstat
+- file:/proc/meminfo == details about memory , including swap,cache,physical memory size and available free space
+- file:/proc/misc
+- file:/proc/modules == loded kernel modules (such as snd,alsa,hw,gameport etc.)
+- file:/proc/mounts ==mounted partitions
+- file:/proc/mtrr
+- file:/proc/partitions == Available Disk Partitions (eg. hda,hda1,…,hdb,.. etc.)
+- file:/proc/pci == pci devices and their corresponding Bus no.,devive no.,function no. ,irq no. etc.
+- file:/proc/slabinfo ==
+- file:/proc/stat == cpu usage info , Includes per cpu load (eg. cpu0,cpu1,…) , context switches , uptime etc.
+- file:/proc/swaps == Swap partition drive name and size etc.
+- file:/proc/sysrq-trigger
+- file:/proc/uptime == Uptime (times elapsed since boot) for individule cpus
+- file:/proc/version == Linux Kernel version and compiler used to build it
+- file:/proc/vmstat == Details Virtual memory Info ,including page faults,range,etc-.
+
+- Các thư mục đc đánh số chính là PID của các tiến trình đang chạy. Chứa các thông tin về tiến trình đấy. 
