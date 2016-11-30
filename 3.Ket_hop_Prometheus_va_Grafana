@@ -1,0 +1,177 @@
+#Cấu hình Grafana-Prometheus
+
+**Mục lục:**
+
+[1. Cài đặt Grafana 3.1.1](#1)
+
+[2. Cấu hình Grafana-Prometheus](#2)
+
+=================================
+
+###1. Cài đặt Grafana 3.1.1
+
+- Hướng dẫn cài đặt Grafana chung với máy chạy prometheus.
+
+- Nếu đã cài PromDash trước đấy thì bạn nên gỡ bỏ hoặc cho ngừng service.
+
+- Các lệnh thực hiện với quyền root.
+
+- Tải gói cài .deb
+```sh
+wget https://grafanarel.s3.amazonaws.com/builds/grafana_3.1.1-1470047149_amd64.deb
+apt-get install adduser libfontconfig
+dpkg -i grafana_3.1.1-1470047149_amd64.deb
+```
+
+- Khởi động Grafana
+```sh
+service grafana-server start
+```
+
+- Khởi động cùng OS 
+```sh
+update-rc.d grafana-server defaults 95 10
+```
+
+- Đăng nhập theo URL: `http://10.10.10.20:3000` User, Password là admin
+
+###2. Cấu hình Grafana-Prometheus
+
+- Import Data Sources
+
+![plugincpu](/Images/Gra1-.png)
+
+- Điền các thông số như bên dưới
+
+![plugincpu](/Images/Gra-2.png)
+
+- Nếu Data hoạt động sẽ có thông báo
+
+![plugincpu](/Images/Gra-3.png)
+
+- Tạo Dashboard mặc định của Prometheus
+
+![plugincpu](/Images/Gra-4.png)
+
+- Trở về mục Home của Dashboards sẽ có `Prometheus Stats`
+
+![plugincpu](/Images/Gra-6.png)
+
+- Tạo Dashboard mới
+
+![plugincpu](/Images/Gra-7.png)
+
+- Chọn Add Panel để thêm các biểu đồ
+
+![plugincpu](/Images/Gra-8.png)
+
+Ví dụ: Show lên UpTime của máy Prometheus
+
+- Chọn Panel: Singlestat
+- Panel data source: Prometheus
+- Điển vào Query:
+```sh
+time() - node_boot_time{instance="prometheus:9100"}
+```
+
+![plugincpu](/Images/Gra-9.png)
+
+- Chọn thẻ Options để đặt đơn vị cho Metrics, Ở đây chọn Unit là s
+
+![plugincpu](/Images/Gra-10.png)
+
+- Chỉnh tên cho Panel ở phần General -> Title
+
+- Nhấn đồng bộ hoặc back to dashboard
+
+![plugincpu](/Images/Gra-5.png)
+
+###3. Query expression
+
+- UpTime 
+```sh
+time() - node_boot_time{instance="prometheus:9100"}
+```
+
+- % CPU used
+```sh
+100 * (1 - avg by(instance)(irate(node_cpu{mode="idle",instance="prometheus:9100"}[5m])))
+```
+
+- % CPU system
+```sh
+sum(rate(node_cpu{instance="prometheus:9100",mode="system"}[5m])) * 100 / count(count by (cpu)(node_cpu{instance="prometheus:9100"}))
+```
+
+- RAM Total
+```sh
+node_memory_MemTotal{instance="prometheus:9100"}
+```
+
+- Ram Free
+```sh
+node_memory_MemFree{instance="prometheus:9100"}
+```
+
+- Cached
+```sh
+node_memory_Cached{instance="prometheus:9100"}
+```
+
+- Network receive
+```sh
+rate(node_network_receive_bytes{instance='prometheus:9100',device='eth0'}[5m])
+```
+
+- % disk "/" used
+```sh
+100 - node_filesystem_free{instance='prometheus:9100',mountpoint='/'} / node_filesystem_size{instance='prometheus:9100'} * 100
+```
+
+- Disk "/" Free
+```sh
+node_filesystem_avail{instance="prometheus:9100",mountpoint="/"}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Node: Tắt prometheus-client thì mất khoảng 5 phút mới ngắt hiện thông số bên Grafana
